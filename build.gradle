@@ -3,7 +3,6 @@ plugins {
     id 'com.github.kt3k.coveralls' version '2.8.2'
 }
 
-apply plugin:'kotlin-android-extensions'
 apply plugin:'jacoco'
 
 repositories {
