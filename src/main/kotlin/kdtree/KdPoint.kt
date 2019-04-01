@@ -9,7 +9,6 @@ class KdPoint<T> where T : Number, T : Comparable<T> {
     val dimensions: Int
         get() = axisValues.size
 
-    @SafeVarargs
     constructor(vararg axisValues: T) {
         this.axisValues = axisValues.asList()
     }

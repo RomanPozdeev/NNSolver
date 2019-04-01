@@ -2,8 +2,6 @@ package solver
 
 import kdtree.KdPoint
 import kdtree.KdTree
-import kotlinx.coroutines.Deferred
-import java.util.*
 
 class SolverCoroutineOrchestrator<T>(
     private val tree: KdTree<T>,
@@ -29,23 +27,16 @@ class SolverCoroutineOrchestrator<T>(
             val subset = inputPoints.subList(startIndex, endIndex)
 
             startIndex += batchSize
-
             val worker = SolverCoroutineWorker(tree, subset)
-
             workers.add(worker)
         }
 
-        val resultPoints = ArrayList<KdPoint<T>>(inputPoints.size)
-        val asyncPoints = mutableListOf<Deferred<List<KdPoint<T>>>>()
-
-        for (worker in workers) {
-            asyncPoints.add(worker.getResultPointsAsync())
-        }
-
-        asyncPoints.forEach {
-            resultPoints.addAll(it.await())
-        }
-
-        return resultPoints
+        return workers
+            .map { it.getResultPointsAsync() }
+            .asSequence()
+            .fold(ArrayList(inputPoints.size)) { acc, deferred ->
+                acc.addAll(deferred.await())
+                acc
+            }
     }
 }
